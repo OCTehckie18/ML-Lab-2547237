@@ -1,40 +1,98 @@
-# Machine Learning Lab 6: Logistic Regression vs. K-Nearest Neighbors (KNN)
+# Machine Learning Lab Activity: Decision Trees
 
 ## Objective
-The primary objective of this lab is to implement, evaluate, and compare the performance of **Logistic Regression** and **K-Nearest Neighbors (KNN)** classifiers. 
+This lab activity explores **Decision Tree classification** using the built-in Iris dataset from `sklearn.datasets.load_iris()`. The notebook is designed to be learner-centric, with individual code cells and short interpretations explaining why each step is used.
+
+## Notebook
+- **File:** `Lab_activity/decision_trees.ipynb`
+- **Topic:** Decision Tree Classifier
+- **Dataset:** Iris Dataset
+- **Library Source:** `sklearn.datasets.load_iris()`
 
 ## Dataset
-- **Name:** Breast Cancer Wisconsin (Diagnostic) Dataset
-- **Source:** UCI Machine Learning Repository
-- **Description:** The dataset contains 569 samples with 32 columns. Features are computed from a digitized image of a fine needle aspirate (FNA) of a breast mass. They describe characteristics of the cell nuclei present in the image.
-- **Target Variable:** `y` (Diagnosis: M = Malignant, B = Benign)
+- **Name:** Iris Dataset
+- **Samples:** 150 flower records
+- **Features:** 4 numeric flower measurements
+- **Target Classes:** `setosa`, `versicolor`, and `virginica`
+- **Class Balance:** The dataset contains an equal number of samples from each class.
 
-## Steps Performed
-1. **Importing Libraries:** Utilized `pandas`, `numpy`, `matplotlib`, `seaborn`, and `scikit-learn` for data manipulation, visualization, and modeling.
-2. **Exploratory Data Analysis (EDA):** Analyzed the structure of the dataset and checked for basic statistics and data types to understand the distributions and scale of features.
-3. **Data Preprocessing:**
-   - Separated features (X) and the target variable (y).
-   - Encoded the categorical target variable using `LabelEncoder`.
-   - Addressed differences in feature scales by standardizing the data using `StandardScaler` (crucial for distance-based algorithms like KNN).
-4. **Model Training:**
-   - Split the dataset into training and testing sets.
-   - Initialized and trained the **Logistic Regression** model.
-   - Initialized and trained the **K-Nearest Neighbors** model.
-5. **Model Evaluation:**
-   - Evaluated both models using key classification metrics: Accuracy, Precision, Recall, F1 Score, and Confusion Matrix.
+## Features Used
+- `sepal length (cm)`
+- `sepal width (cm)`
+- `petal length (cm)`
+- `petal width (cm)`
 
-## Key Findings & Conclusion
-- The EDA revealed significant variance in the scales of different features (e.g., area vs. smoothness), underscoring the importance of feature scaling.
-- By standardizing the data, the models—especially KNN, which relies on Euclidean distance—were able to perform optimally without being biased by features with larger magnitudes.
-- Both models achieved high predictive performance on the test set. Specific metric values and visualizations are detailed within the notebook.
+## Tasks Covered
+1. **Dataset Exploration**
+   - Loaded the Iris dataset.
+   - Displayed the number of samples and features.
+   - Listed feature names and target classes.
+   - Displayed the first five records.
+   - Checked class distribution.
+
+2. **Data Preparation**
+   - Split the dataset into 80% training data and 20% testing data using `random_state=42`.
+   - Explained why separate training and testing sets are needed for model evaluation.
+
+3. **Default Decision Tree Classifier**
+   - Trained a default `DecisionTreeClassifier`.
+   - Predicted class labels for the test dataset.
+   - Evaluated the model using accuracy score, confusion matrix, and classification report.
+
+4. **Decision Tree Visualization**
+   - Visualized the trained tree using `plot_tree()`.
+   - Identified the root node, internal nodes, leaf nodes, maximum tree depth, and first split feature.
+   - Explained why the first split feature is selected based on impurity reduction.
+
+5. **Gini Index vs. Entropy**
+   - Trained separate models using `criterion="gini"` and `criterion="entropy"`.
+   - Compared accuracy, tree depth, number of leaf nodes, and root feature selected.
+   - Identified which criterion produced the simpler tree.
+
+6. **Effect of Maximum Tree Depth**
+   - Trained models with `max_depth` values of `1`, `2`, `3`, `4`, and `None`.
+   - Compared training accuracy, testing accuracy, actual tree depth, and learner-friendly observations.
+   - Discussed underfitting, best generalization, and overfitting risk.
+
+7. **Effect of `min_samples_split`**
+   - Trained models using values `2`, `5`, `10`, and `20`.
+   - Compared accuracy, tree depth, number of leaf nodes, and model complexity.
+
+8. **Effect of `min_samples_leaf`**
+   - Trained models using values `1`, `2`, `5`, and `10`.
+   - Explained how larger leaf-size requirements reduce overly specific rules and help control overfitting.
+
+9. **Hyperparameter Tuning**
+   - Used `GridSearchCV` to tune:
+     - `criterion`: `gini`, `entropy`
+     - `max_depth`: `2`, `3`, `4`, `None`
+     - `min_samples_split`: `2`, `5`, `10`
+     - `min_samples_leaf`: `1`, `2`, `4`
+   - Reported the best hyperparameter combination, best cross-validation score, and optimized model test accuracy.
+
+10. **Analysis**
+    - Explained the role of the `criterion` parameter.
+    - Discussed how `max_depth` affects underfitting and overfitting.
+    - Explained why larger `min_samples_split` and `min_samples_leaf` values produce simpler trees.
+    - Recommended a suitable Decision Tree model for the Iris dataset.
+
+## Key Learning Outcomes
+- Decision Trees are interpretable models because their predictions can be visualized as decision rules.
+- `criterion` controls how split quality is measured.
+- `max_depth` directly controls tree growth and has a strong effect on underfitting and overfitting.
+- Larger `min_samples_split` and `min_samples_leaf` values usually produce simpler trees.
+- Hyperparameter tuning helps select a model that balances accuracy and interpretability.
 
 ## How to Run
 1. Clone the repository and navigate to the project root.
-2. Ensure you have the required dependencies installed:
+2. Install the required dependencies:
    ```bash
-   pip install pandas numpy scikit-learn matplotlib seaborn jupyter
+   pip install pandas scikit-learn matplotlib jupyter
    ```
-3. Run the notebook `Lab6.ipynb` inside the `Lab 6` directory using Jupyter Notebook or Jupyter Lab.
+3. Open and run the notebook:
+   ```bash
+   jupyter notebook Lab_activity/decision_trees.ipynb
+   ```
 
 ---
 **Registration Number:** 2547237
