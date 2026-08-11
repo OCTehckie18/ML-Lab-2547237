@@ -1,89 +1,89 @@
-# Lab 8: Implementation and Performance Evaluation of Categorical Naive Bayes Classifier
+# Lab 9: Support Vector Machine (SVM) & Principal Component Analysis (PCA)
 
 ## Objective
-This lab implements and evaluates a **Categorical Naive Bayes (CategoricalNB)** classifier on the Play Tennis dataset. It covers the complete machine learning pipeline — data preprocessing, EDA, model training, evaluation, single-sample inference, and multi-model comparison — with detailed interpretations at each step.
+This lab implements and evaluates two fundamental machine learning techniques — **Support Vector Machine (SVM)** for supervised classification and **Principal Component Analysis (PCA)** for unsupervised dimensionality reduction — along with an extra-credit comparison against **Linear Discriminant Analysis (LDA)**.
 
 ## Notebook
-- **File:** `Lab 8/lab-8.ipynb`
-- **Topic:** Categorical Naive Bayes Classification & Model Comparison
-- **Dataset:** Play Tennis (`datasets/tennis.csv`)
-- **Branch:** `Lab-8`
+- **File:** `Lab-9/2547237-svm-pca.ipynb`
+- **Branch:** `Lab-9`
 
-## Dataset
-- **Name:** Play Tennis
-- **Samples:** 50 instances (augmented classic benchmark)
-- **Features:** 4 categorical input features
-- **Target:** `Play Tennis` → `Yes` / `No`
-- **Missing Values:** None
+---
 
-## Features Used
-| Feature | Values |
-|---------|--------|
-| `Outlook` | Sunny, Overcast, Rain |
-| `Temperature` | Hot, Mild, Cool |
-| `Humidity` | High, Normal |
-| `Wind` | Weak, Strong |
+## Part A: Support Vector Machine (SVM)
 
-## Tasks Covered
+- **Dataset:** UCI Breast Cancer Wisconsin (Diagnostic)
+- **Source:** `sklearn.datasets.load_breast_cancer()`
+- **Samples:** 569 | **Features:** 30 | **Classes:** Malignant / Benign
 
-1. **Data Loading & Exploration**
-   - Loaded `tennis.csv`, dropped the row-index column, and renamed the target column to `Play`.
-   - Displayed shape, data types, missing value counts, and class distribution.
+### Tasks Covered
+1. **Data Loading & EDA** — Class distribution, correlation heatmap, feature box plots by diagnosis.
+2. **Preprocessing** — 80:20 stratified train-test split, `StandardScaler` normalisation.
+3. **Baseline SVM** — Linear kernel `SVC(C=1.0)` with 5-fold cross-validation.
+4. **Hyper-parameter Tuning** — `GridSearchCV` over `C ∈ {0.001, 0.01, 0.1, 1, 10, 100, 1000}`.
+5. **Evaluation** — Accuracy, Precision, Recall, F1 Score, Confusion Matrix, Classification Report.
 
-2. **Exploratory Data Analysis (EDA)**
-   - Grouped bar charts for all 4 features vs. the `Play` target.
-   - Class distribution pie chart and stacked 100%-bar chart for Outlook.
-   - Label-encoded correlation heatmap to identify feature–target relationships.
+### Key Results
+| Metric | Score |
+|--------|-------|
+| Accuracy | ≥ 0.97 |
+| Precision | ≥ 0.97 |
+| Recall | ≥ 0.96 |
+| F1 Score | ≥ 0.97 |
 
-3. **Data Preprocessing — Label Encoding**
-   - Applied `LabelEncoder` independently to each categorical feature column.
-   - Stored fitted encoders in a dictionary for consistent query transformation at inference time.
-   - Displayed a side-by-side comparison of original and encoded feature values.
+### Key Observations
+- Feature standardisation is mandatory — SVM is scale-sensitive.
+- A linear kernel is sufficient: the Breast Cancer dataset is approximately linearly separable in the 30-D standardised feature space.
+- High recall for the malignant class is the priority metric in clinical screening.
+- Small C (soft margin) values already yield excellent performance, indicating well-separated classes.
 
-4. **Dataset Partitioning**
-   - 80:20 stratified train-test split (`random_state=42`) to preserve class proportions.
+---
 
-5. **Categorical Naive Bayes — Training & Evaluation**
-   - Trained `CategoricalNB(alpha=1.0)` (Laplace smoothing) on the training data.
-   - Reported overall **Model Accuracy**, **Confusion Matrix** (visual + numeric), and **Classification Report** (Precision, Recall, F1-Score per class).
+## Part B: Principal Component Analysis (PCA)
 
-6. **Single-Sample Inference**
-   - Query: `{Outlook: Sunny, Temperature: Cool, Humidity: High, Wind: Strong}`
-   - Displayed the **predicted class label** and **class probabilities** (ASCII bar + horizontal bar chart).
+- **Dataset:** UCI Wine
+- **Source:** `sklearn.datasets.load_wine()`
+- **Samples:** 178 | **Features:** 13 | **Classes:** 3 cultivars
 
-7. **Model Comparison**
-   - Trained three additional classifiers on the same training data:
-     - `DecisionTreeClassifier`
-     - `LogisticRegression`
-     - `SVC(kernel='rbf', probability=True)`
-   - Compared all four models across:
-     - Test set accuracy
-     - Query prediction label
-     - Query `P(No)` and `P(Yes)` probabilities
-   - Rendered a 2-panel comparison dashboard (accuracy bars + probability grouped bars) and a 2×2 confusion matrix grid.
+### Tasks Covered
+1. **Data Loading & Standardisation** — `StandardScaler` applied before PCA.
+2. **Full PCA Decomposition** — All 13 components; explained variance ratio table.
+3. **Scree Plot & Cumulative Variance** — Identifies elbow and ≥ 95% variance threshold.
+4. **2-Component Reduction** — 13 features → 2 principal components; 2D scatter plot.
+5. **Component Loadings** — Bar charts showing feature contributions to PC1 & PC2.
+6. **Dataset Comparison** — Original vs. PCA-reduced: features, variance, speed, interpretability.
+7. **Advantages / Limitations / Applications** — Comprehensive discussion.
 
-8. **Analysis Report**
-   - 4-sentence explanation of why models produce different predictions and probability scores for the same test instance, covering the decision boundaries of NB, Decision Tree, Logistic Regression, and SVM.
+### Key Results
+| Aspect | Original (13 features) | PCA (2 PCs) |
+|--------|------------------------|-------------|
+| Dimensionality | 13 | 2 |
+| Variance Retained | 100% | ~55% |
+| Visualisable | No | Yes (2D) |
+| Training Speed | Baseline | Significantly faster |
 
-## Models Compared
-| Model | Algorithm Type |
-|-------|---------------|
-| Categorical Naive Bayes | Probabilistic (Bayes' theorem + conditional independence) |
-| Decision Tree | Rule-based (recursive feature splitting) |
-| Logistic Regression | Linear (log-odds with sigmoid) |
-| SVM (RBF kernel) | Geometric (max-margin hyperplane + Platt scaling) |
+---
 
-## Key Learning Outcomes
-- `CategoricalNB` is well-suited for purely categorical datasets; Laplace smoothing prevents zero-probability issues for unseen feature combinations.
-- Label encoding must use the **same fitted encoder** for both training and inference to avoid label drift.
-- Stratified splitting is critical on small datasets to maintain representative class proportions in both splits.
-- Different classifiers optimise different objective functions, leading to varying probability estimates even when they agree on the final predicted class.
-- The conditional independence assumption in Naive Bayes compounds evidence from individual features multiplicatively, which can produce more extreme probability scores than discriminative models.
+## Extra Credit: Linear Discriminant Analysis (LDA)
+
+- **Dataset:** UCI Wine (same as Part B)
+- **Comparison:** LDA (supervised) vs. PCA (unsupervised) in 2D
+
+### Tasks Covered
+1. **LDA Reduction** — 13 features → 2 linear discriminants.
+2. **Side-by-side Scatter** — PCA vs. LDA 2D projections.
+3. **Separability Quantification** — kNN (k=5) 5-fold CV accuracy on original / PCA / LDA.
+4. **Comprehensive Comparison Table** — Objective, type, assumptions, limitations.
+5. **Conclusion** — When to prefer PCA vs. LDA.
+
+### Key Finding
+LDA achieves markedly better class separability than PCA in 2D because it explicitly optimises for the Fisher criterion (between-class / within-class scatter ratio), leveraging class labels during projection.
+
+---
 
 ## How to Run
-1. Clone the repository and switch to the `Lab-8` branch:
+1. Clone the repository and switch to the `Lab-9` branch:
    ```bash
-   git checkout Lab-8
+   git checkout Lab-9
    ```
 2. Install the required dependencies:
    ```bash
@@ -91,7 +91,7 @@ This lab implements and evaluates a **Categorical Naive Bayes (CategoricalNB)** 
    ```
 3. Open and run the notebook:
    ```bash
-   jupyter notebook "Lab 8/lab-8.ipynb"
+   jupyter notebook "Lab-9/2547237-svm-pca.ipynb"
    ```
 
 ---
