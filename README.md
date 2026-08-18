@@ -1,110 +1,93 @@
-# 🛡️ Mission Crisis × Robin Hood Army
-## Classifying Disaster Food-Aid Requests Using Ensemble Machine Learning
+# Lab 10 — Learning the XOR Boolean Function Using an MLP
 
 **Registration Number:** 2547237  
 **Course:** MCA 521-4 — Machine Learning  
-**Assessment:** CIA-III — ML for Social Good Ensemble Challenge (25 Marks)  
-**Mission Domain:** Crisis / Disaster Response
+**Lab:** Lab Exercise 10  
+**Branch:** `Lab-10`
 
 ---
 
-## Problem Statement
+## Aim
 
-During large-scale crises (floods, COVID lockdowns, earthquakes), humanitarian organisations like the **Robin Hood Army** receive hundreds of simultaneous messages requesting aid. Manually triaging which messages are genuine **food-aid requests** versus general chatter, news, or offers of help is a critical bottleneck that delays food delivery to those in need.
+1. To understand how to implement neural networks using different deep learning libraries (**Keras** and **TensorFlow**).
+2. To solve the non-linear XOR problem using an MLP and study the effect of hyperparameters such as learning rate, activation functions, number of neurons, and epochs on model performance.
 
-This project builds an **end-to-end ensemble ML pipeline** that classifies disaster messages as food-aid requests or not, using the **Multilingual Disaster Response Messages** dataset. The model acts as a triage assistant for RHA volunteers.
+---
 
-## Dataset
+## The XOR Problem
 
-- **Name:** Multilingual Disaster Response Messages
-- **Source:** [Kaggle — landlord/multilingual-disaster-response-messages](https://www.kaggle.com/datasets/landlord/multilingual-disaster-response-messages?resource=download)
-- **Original Provider:** Figure Eight / Appen
-- **Real-world origin:** Messages from the 2010 Haiti earthquake, 2010 Pakistan floods, 2012 Hurricane Sandy
-- **Size:** ~26,000 messages × 36 binary category labels
-- **License:** CC0 (Public Domain)
+The XOR Boolean function is a classic example of a **non-linearly separable** problem. A single-layer perceptron cannot learn it; an MLP with at least one hidden layer is required.
+
+| Input 1 | Input 2 | XOR Output |
+|---------|---------|------------|
+| 0       | 0       | 0          |
+| 0       | 1       | 1          |
+| 1       | 0       | 1          |
+| 1       | 1       | 0          |
+
+---
 
 ## Project Structure
 
 ```
-CIA-III/
-├── data/
-│   └── disaster_messages.csv         # Dataset (download from Kaggle)
-├── notebooks/
-│   └── 2547237_mission_crisis.ipynb   # Main notebook (Q1–Q5)
-├── models/
-│   └── best_pipeline.joblib           # Saved best model pipeline
-├── figures/
-│   ├── eda_*.png                      # EDA visualisations
-│   ├── model_comparison.png           # Metrics comparison
-│   ├── confusion_matrices.png         # Confusion matrices
-│   ├── roc_curves.png                 # ROC curves
-│   └── shap_*.png                     # Explainability plots
-├── README.md                          # This file
-└── ethics_statement.md                # Ethics & limitations
+Lab-10/
+└── 2547237_Lab10_XOR_MLP.ipynb   # Main notebook (all implementations)
 ```
 
-## How to Run
+---
 
-### Prerequisites
+## Notebook Contents
+
+### Step 1 — Dataset
+Defines all 4 XOR input–output combinations as NumPy arrays.
+
+### Step 2 — Keras (TensorFlow High-Level API)
+- **Architecture:** Input(2) → Dense(4, tanh) → Dense(1, sigmoid)
+- **Loss:** Binary Cross-Entropy
+- **Optimizer:** Adam (lr = 0.1)
+- **Epochs:** 1000
+- Uses `keras.Sequential` and `model.fit()`.
+
+### Step 3 — TensorFlow Low-Level API
+- Same architecture, implemented using `tf.Variable`, `tf.GradientTape`, and a manual training loop.
+- Full explicit control over forward pass, loss, gradient computation, and weight updates.
+
+### Optional Exercises
+- **Decision boundary plots** — visualises the non-linear boundary learned by each model.
+- **Training curve comparison** — loss vs. epochs for both implementations.
+- **Hyperparameter study:**
+  - Effect of learning rate (0.001, 0.01, 0.1, 0.5)
+  - Effect of activation function (tanh, relu, sigmoid, elu)
+  - Effect of number of hidden neurons (2, 4, 8, 16)
+
+---
+
+## Key Findings
+
+| Hyperparameter | Observation |
+|---|---|
+| **Hidden layer** | Required — XOR is not linearly separable |
+| **Activation** | `tanh` > `relu` > `sigmoid` for XOR convergence |
+| **Learning rate** | ~0.1 with Adam is optimal; too low → slow, too high → oscillates |
+| **Neurons** | ≥ 2 hidden neurons suffice; more = faster convergence |
+| **Epochs** | 500–1000 sufficient at lr=0.1 |
+
+---
+
+## Prerequisites
 
 ```bash
-pip install pandas numpy matplotlib seaborn scikit-learn xgboost lightgbm shap imbalanced-learn joblib jupyter
+pip install tensorflow numpy matplotlib
 ```
 
-### Steps
+## Running the Notebook
 
-1. **Clone the repository** and navigate to the CIA-III directory:
-   ```bash
-   git clone <repo-url>
-   cd ML-Lab-2547237/CIA-III
-   ```
+```bash
+cd Lab-10
+jupyter notebook 2547237_Lab10_XOR_MLP.ipynb
+```
 
-2. **Download the dataset** from [Kaggle](https://www.kaggle.com/datasets/landlord/multilingual-disaster-response-messages?resource=download) and place `disaster_messages.csv` in `data/`.
-
-3. **Run the notebook:**
-   ```bash
-   jupyter notebook notebooks/2547237_mission_crisis.ipynb
-   ```
-   Execute all cells sequentially. The notebook handles:
-   - Data loading, cleaning, and EDA
-   - Feature engineering (TF-IDF + handcrafted domain features)
-   - Model training: Decision Tree → Random Forest → XGBoost → LightGBM → Voting → Stacking
-   - SHAP explainability (global + local)
-   - Live prediction demo
-
-4. **Verify model output:**
-   ```python
-   import joblib
-   pipeline = joblib.load('models/best_pipeline.joblib')
-   print(f"Model loaded: {pipeline['model_name']}")
-   ```
-
-## Models Implemented
-
-| Model | Type | Description |
-|---|---|---|
-| Decision Tree | Baseline | Single tree with `max_depth=10`, `class_weight='balanced'` |
-| Random Forest | Bagging | GridSearchCV-tuned; 200–300 trees |
-| XGBoost | Boosting | Gradient boosting with `scale_pos_weight` for imbalance |
-| LightGBM | Boosting | Leaf-wise gradient boosting with `is_unbalance=True` |
-| Voting | Ensemble | Soft voting: RF + XGBoost + LightGBM |
-| Stacking | Ensemble | Base: RF + XGBoost + LightGBM; Meta: Logistic Regression |
-
-## Key Features Engineered
-
-- **TF-IDF (300 features):** Unigrams and bigrams from message text
-- **Food keyword count:** Matches against domain vocabulary (hungry, ration, starving, etc.)
-- **Water/Medical/Shelter keyword counts:** Domain-informed features
-- **Urgency keyword count:** Help, please, urgent, emergency, SOS, etc.
-- **Message length & word count:** Structural features
-- **Genre encoding:** Direct SMS vs. news vs. social media
-
-## Responsible Use
-
-- The model is a **triage assistant**, not an autonomous decision-maker.
-- **Recall is prioritised** over precision — missing a food request is costlier than a false alarm.
-- Human volunteers must review all flagged messages before action.
-- See `ethics_statement.md` for the full ethics discussion.
+Execute all cells sequentially. Plots are auto-saved as PNG files in the same directory.
 
 ---
 

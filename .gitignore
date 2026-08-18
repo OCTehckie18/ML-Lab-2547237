@@ -1,1 +1,44 @@
-/Lab 6
+# ── Directories ignored on Lab-10 branch ────────────────────────────────────
+/Lab 6/
+/Lab 8/
+/Lab-9/
+/Lab_activity/
+/CIA-III/
+/datasets/
+
+# ── Python artefacts ─────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# ── Jupyter / IPython ────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ── Virtual environments ──────────────────────────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+
+# ── OS & editor noise ─────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# ── Model / data artefacts ────────────────────────────────────────────────────
+*.joblib
+*.pkl
+*.h5
+*.hdf5
+*.pb
+saved_model/
